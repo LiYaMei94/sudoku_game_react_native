@@ -5,6 +5,8 @@ import {
   View,
   Text,
   TouchableOpacity ,
+  TouchableHighlight,
+  DeviceEventEmitter
 } from 'react-native';
 import {
     StackcellSize,
@@ -22,28 +24,30 @@ import {
     getArrayItems
 } from '../utils/util';
 const stack = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-export default class Game extends Component{
+export default class Game extends React.Component{
     stacks = stack.map(x => new Array(9))
     blankArr=getArrayItems(stack,9);
     constructor(props){
         super(props);
         this.state={
-            sudokuArr:[],
-            sdArr:getSudokuArr(),
-            stackcellDealArr:[],
-            stackcellArr:[],
-            cellActive:{}
+            //sudokuArr:props.navigation.getParam('sdArr', '[]'),
+            sdArr:props.navigation.getParam('sdArr', '[]'),
+            stackcellArr:props.navigation.getParam('stackcellArr', '[]'),
+            cellActive:{},
+            errorInfo:{},//填的数字错误
         }
     }
     
     componentDidMount(){
-        //console.warn(this.state.sdArr)
-        this.createBlankCells();
-        
+        this._setDeal();
+       
+    }
+    componentWillUnmount(){
     }
     //创建空白
-    createBlankCells(){
-        let backupSdArr = this.state.sdArr.slice();
+    /*createBlankCells(){
+        let backupSdArr = this.state.sudokuArr.slice();
+        //let backupSdArr = getSudokuArr().slice();
         let blankArr=getArrayItems(stack,9);
         let temp=[];
         for(var i=1;i<=9;i++){
@@ -58,14 +62,14 @@ export default class Game extends Component{
         }
         this.setState({
             sudokuArr:temp,
-            sdArr:this.state.sdArr
+            sdArr:backupSdArr
         },()=>{
             //console.warn(this.state.sdArr)
         })
         this._setStackcellInitArr(temp);
-    }
+    }*/
     //设置初始牌的top和left
-    _setStackcellInitArr(sudokuArr){
+    /*_setStackcellInitArr(sudokuArr){
         let temp=[];
         for(var i=1;i<=9;i++){
             let item=[];
@@ -92,7 +96,7 @@ export default class Game extends Component{
         },()=>{
             //console.warn(sdArr)
         })
-    }
+    }*/
     //游戏开始
     _setDeal(){
         let {stackcellArr}=this.state;
@@ -149,16 +153,37 @@ export default class Game extends Component{
     //检查放入的数独是否正确
     checkResult(number,row,col){
         //console.warn(number,row,col)
+        var checkResult=checkCell(this.state.sdArr,number,row,col);
+        var errorInfo={
+            isError:checkResult.isError,
+            row:row,
+            col:col
+        }
+        //this.stacks[i][j].errorCell(errorInfo);
         this.setState({
-            sdArr:checkCell(this.state.sdArr,number,row,col)
+            sdArr:checkResult.sdArr,
+            errorInfo:errorInfo
         },()=>{
-            console.warn(this.state.sdArr)
+            //console.warn(this.state.sdArr)
         })
     }
     render(){
         const {stackcellArr,sdArr}=this.state;
         return (
             <SafeAreaView style={styles.container}>
+                <View style={styles.game_top_container}>
+                    <Text style={styles.game_top_item}>错误：0/3</Text>
+                    <Text style={styles.game_top_item}>简单</Text>
+                    <View style={styles.game_top_item}>
+                        <Text style={{color:'#EEEEEE',marginRight:10}}>03:48</Text>
+                        <TouchableHighlight
+                            style={styles.game_pause_button}
+                            underlayColor='transparent'
+                            >
+                            <Text style={{color:'#EEEEEE',fontFamily:"iconfont"}}>{'\ue677'}</Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
                 <View style={styles.game_container}>
                     <View style={styles.sudoku_board}>
                         <Grid sudokuArr={sdArr} gridPosition={this.gridPosition} setFillSudokuSite={this.setFillSudokuSite.bind(this)}></Grid>
@@ -166,10 +191,12 @@ export default class Game extends Component{
                     {
                         stackcellArr.map((itemi,i)=>{
                             return itemi.map((itemj,j)=>{
+                                console.warn(this.stacks[j][i])
                                 return (
                                 <Stackcell ref={ref => this.stacks[j][i] = ref}  key={i+'-'+j} 
                                     item={itemj}  fillSudoku={this.fillSudoku.bind(this)} 
                                     checkResult={this.checkResult.bind(this)}
+                                    errorInfo={this.state.errorInfo}
                                     setFillSudokuSite={this.setFillSudokuSite.bind(this)}/>
                                 )
                             })
@@ -179,28 +206,47 @@ export default class Game extends Component{
                         this.showMask()
                     }
                 </View>
-                <TouchableOpacity  style={styles.gameStart}  
-                    onPress={this._setDeal.bind(this)}>
-                    <Text>点击发牌</Text>
-                </TouchableOpacity>
             </SafeAreaView>
         );
     }
     
 };
-
+/*
+<TouchableOpacity  style={styles.gameStart}  
+                    onPress={this._setDeal.bind(this)}>
+                    <Text>点击发牌</Text>
+                </TouchableOpacity>
+*/
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:'#5D9DA0',
+        backgroundColor:'#444264',
         alignItems:"center",
         
+    },
+    game_top_container:{
+        width:'100%',
+        height:40,
+        backgroundColor:"#454364",
+        marginTop:game_container_marginTop,
+        flexDirection:"row",
+        alignItems:"center",
+        paddingLeft:10,
+        paddingRight:10
+    },
+    game_top_item:{
+        flex:1,
+        color:'#EEEEEE',
+        justifyContent:"center",
+        alignItems:"center",
+        flexDirection:"row",
+        textAlign:"center"
     },
     game_container:{
         width:BoardWidth,
         position:"relative",
         alignItems:"center",
-        marginTop:game_container_marginTop,
+        //marginTop:game_container_marginTop,
     },
     sudoku_board:{
         backgroundColor:'#FEA600',
@@ -251,6 +297,6 @@ const styles = StyleSheet.create({
         position:"absolute",
         top:cellFrist.pageY,
         left:cellFrist.pageY,
-        //backgroundColor:'red'
-    }
+    },
+    
 });

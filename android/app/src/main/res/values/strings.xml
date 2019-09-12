@@ -1,4 +1,3 @@
 <resources>
-    <string name="app_name">sudoku</string>
-    <string name="facebook_app_id">2094171727560943</string>
+    <string name="app_name">SudokuPyramid</string>
 </resources>

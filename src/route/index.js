@@ -5,14 +5,18 @@ import { createStackNavigator} from 'react-navigation-stack';
 
 //路由文件
 
-import Game from '../page/game'
+import Game from '../page/game';
+import Index from '../page/index';
+import Setting from '../page/setting'
 
 export const router = createStackNavigator(
     {
+        Index:Index,
         Game: Game,
+        Setting:Setting
     },
     {
-        initialRouteName: "Game",
+        initialRouteName: "Index",
         mode: 'modal',
         defaultNavigationOptions: {
             header: null,

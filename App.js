@@ -1,12 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
 
-import React, {Fragment} from 'react';
+import React, {Component} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,7 +13,7 @@ import { createStackNavigator, createAppContainer, createBottomTabNavigator } fr
 //引入路由文件
 import { router } from './src/route/index';
 const AppContainer = createAppContainer(router);
-export default class App extends React.Component{
+export default class App extends Component{
   render(){
     return (
      <AppContainer></AppContainer>

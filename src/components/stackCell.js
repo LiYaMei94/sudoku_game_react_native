@@ -35,6 +35,7 @@ export default class Stackcell extends Component{
         this.state={
           left:props.item.left,
           top:props.item.top,
+          isError:false
         }
     }
     componentDidMount(){
@@ -83,18 +84,26 @@ export default class Stackcell extends Component{
         })
       }
     }
+    //失败时更新背景色和字体颜色
+    errorCell(obj){
+      if(obj.isError){
+        this.setState({
+          isError:obj.isError
+        })
+      }
+    }
     render(){
-      const {left,top}=this.state;
-      const { item } = this.props;
+      const {left,top,isError}=this.state;
+      const { item,errorInfo } = this.props;
       return (
-        <View style={[styles.Stackcell_bg,{left:left,top:top}]}>
+        <View style={[styles.Stackcell_bg,{left:left,top:top,backgroundColor:isError?'#E77578':'#FEE185'}]}>
           <TouchableHighlight style={{width:'100%',height:'100%',alignItems:"center",justifyContent:"center"}}
             onPress={()=>{
               this.props.fillSudoku(item)
             }}
           
           >
-            <Text style={styles.Stackcell_text}>{item.number}</Text>
+            <Text style={[styles.Stackcell_text,{color:isError?'#fff':'#AD590A'}]}>{item.number}</Text>
           </TouchableHighlight>
         </View>
       );
@@ -118,5 +127,9 @@ export default class Stackcell extends Component{
         color:"#AD590A",
         fontSize: StackcellSize * 2 / 3,
         fontFamily: 'HelveticaNeue',
+    },
+    errorSudoku:{
+        backgroundColor:"#E77578",
+        color:"#fff"
     }
   });

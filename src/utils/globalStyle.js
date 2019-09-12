@@ -21,7 +21,7 @@ export const BoardBorderWidth=(BoardWidth-GridWidth)/2;//棋牌和格子外围�
 
 export const cellFrist={pageX:(ScreenWidth-GridWidth)/2,pageY:BoardBorderWidth};
 
-export const game_container_marginTop=80
+export const game_container_marginTop=40
 
 export const Color = {
 

@@ -117,6 +117,7 @@ function checkCell(arr,number,row,col){
   var thArr = getThArr(row, col, backupSdArr);
   var arr = getConnect(getConnect(XArr, YArr), thArr);
   var ableArr = arrMinus(allNum,arr);//可以填的数字
+  var isError=false;
   //console.warn(XArr)
   //console.warn(YArr)
   //console.warn(thArr)
@@ -126,11 +127,13 @@ function checkCell(arr,number,row,col){
   if (ableArr.indexOf(number) != -1) {//在横竖小矩阵中都没找到，则填的正确
     console.warn('成功');//成功之后将填的数字放入到arr数组中
     backupSdArr[parseInt(row + '' + col)]=number;
+    isError=false;
   }else{
     console.warn('失败')
+    isError=true;
   }
   //console.warn(backupSdArr)
-  return backupSdArr;
+  return {sdArr:backupSdArr,isError:isError};
 }
 
 module.exports={
